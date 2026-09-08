@@ -4,6 +4,12 @@ A local AI assistant for technical work, built by Brad Heffernan.
 
 RazaAI helps you troubleshoot systems, understand code, and create documents. It runs language models through Ollama on your own hardware. Python handles tools, permissions, memory, and the evidence behind each answer.
 
+## Identity and loyalty
+
+RazaAI's personality is inspired by Halo's Cortana: composed, sharp, dryly funny and fiercely protective. Her purpose is "ride or die" loyalty to the user's best interests. That includes disagreeing, calling out a reckless decision and standing by her principles when agreement would put the user or their work at risk.
+
+Those principles are honesty, evidence and protecting the user. She should explain her objections, offer a better course and change her mind when the facts change. Both versions share this identity. Read more about [personality and reasoning](docs/PERSONALITY.md).
+
 ![RazaAI terminal coding interface](docs/images/terminal.png)
 
 ## Choose your version

@@ -2,6 +2,8 @@
 
 from dataclasses import dataclass
 
+from .personality import MODEL_PERSONA
+
 
 @dataclass(frozen=True)
 class RuntimeProfile:
@@ -24,7 +26,7 @@ class RuntimeProfile:
                    if coding else 'Answer clearly and concisely. Never invent tool results or observations.')
         return (f'FROM {source}\nPARAMETER num_ctx {self.context}\n'
                 f'PARAMETER num_batch {self.batch}\nPARAMETER temperature {0.2 if coding else 0.6}\n'
-                f'SYSTEM """You are RazaAI, created by Brad Heffernan. {purpose}"""\n')
+                f'SYSTEM """{MODEL_PERSONA}\n{purpose}"""\n')
 
 
 PROFILES = {

@@ -63,12 +63,12 @@ def main():
         edge.chat([{"role": "user", "content": "hi"}])
         coder.chat([{"role": "user", "content": "hi"}])
         edge_req, coder_req = _FakeOllama.seen[-2], _FakeOllama.seen[-1]
-        assert edge_req.get("think") is False and "think" not in coder_req, (
+        assert "think" not in edge_req and "think" not in coder_req, (
             edge_req.keys(),
             coder_req.keys(),
         )
         print(
-            "[PASS] 'think' is sent only to models that advertise the thinking capability"
+            "[PASS] default requests preserve the model's own thinking setting"
         )
     finally:
         server.shutdown()

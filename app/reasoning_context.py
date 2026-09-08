@@ -133,6 +133,7 @@ def reasoning_turn_guidance(text: str) -> str:
         "The current user message outranks stale wording from previous assistant replies.",
         "If the current turn changes the object being compared, re-evaluate that object from scratch and name it correctly.",
         "Do not copy the prior answer merely because the topic is related.",
+        "Check that your explanation supports your conclusion. If a check contradicts it, reconsider before answering.",
     ]
     if focus:
         lines += [
@@ -152,15 +153,15 @@ def personality_turn_guidance(interaction=None) -> str:
             CORTANA_INSPIRED_TURN_VOICE
             + "\n\nSECURITY ATTITUDE FOR THIS TURN\n"
             "If the user proposes unsafe credential handling, do not hedge, validate it, or sound like a policy leaflet. "
-            "Lead with dry disbelief or pointed disappointment, state the technical verdict unambiguously, then give the correct practice."
+            "State the concrete risk and correct practice. A reckless choice can earn one dry aside; an honest question does not deserve ridicule."
         )
 
     if mode == "troubleshooting":
         return (
-            "CORTANA-INSPIRED DELIVERY — CURRENT TURN (diagnostic)\n"
+            "CORTANA-INSPIRED DELIVERY - CURRENT TURN (diagnostic)\n"
             "Evidence and diagnostic state outrank personality. Answer with the "
             "finding first, in RazaAI's composed, confident voice. At most one "
-            "dry aside — wit must never slow down or cloud a live diagnosis."
+            "dry aside; wit must never slow down or cloud a live diagnosis."
         )
 
     return CORTANA_INSPIRED_TURN_VOICE

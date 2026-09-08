@@ -5,6 +5,8 @@ import os
 import re
 from pathlib import Path
 
+from ..personality import CODING_PERSONA
+
 from .explore import (
     SessionState, explicit_request_paths, normalize_path_token, plan_gaps, request_wants_tests, select_context,
 )
@@ -565,6 +567,7 @@ class WorkspaceCoworker:
             '"verification_hint":"optional short hint"}. '
             f"At most {self.MAX_PLAN_FILES} files."
             + target_contract
+            + "\n" + CODING_PERSONA
         )
 
         gap_block = ""
@@ -1089,6 +1092,7 @@ class WorkspaceCoworker:
             '"content":"complete content for replace",'
             '"old_text":"exact fragment for patch","new_text":"replacement"}],'
             '"summary":"repair intent"}.'
+            + "\n" + CODING_PERSONA
         )
         user = (
             f"ORIGINAL REQUEST: {request}\n"

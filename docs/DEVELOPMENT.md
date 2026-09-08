@@ -38,6 +38,10 @@ Profile and server regression tests cover separate defaults, bounded Jetson sett
 
 Validation on 8 September 2026: all 158 offline test modules passed from the public source export on Linux with Python 3.13, after a fresh dependency installation. Both model profiles completed real propose, approve, verify and undo cycles on an RTX 4080. The 8 GB profile also completed that cycle through the terminal UI. Browser checks covered authentication, interrupted streams, duplicate submissions and mobile layout. Physical Jetson validation remains outstanding.
 
+## Personality and reasoning
+
+See [personality](PERSONALITY.md) for the shared mission, prompt integration and native thinking controls. Persona changes do not alter model weights or permission checks.
+
 ## Coding controls
 
 A model proposes file operations. Python validates paths, patch anchors, requested file scope, syntax and retained symbols. The user reviews a diff before `/approve`. The application snapshots affected files, applies changes, runs project checks, and restores the snapshot if verification fails.

@@ -1,5 +1,13 @@
 # Changes
 
+## Unreleased
+
+* Explained RazaAI's Cortana-inspired identity and principled loyalty in the README and her self-introduction.
+
+* Unified the persona across conversation, coding and model setup. Loyalty includes protective disagreement, independent reasoning and accepting corrections.
+* Preserved model-default thinking unless an operator selects an override.
+* Removed automatic sarcastic leads from basic identity and credential questions.
+
 ## 20.16.0
 
 Both profiles open the terminal by default. `code [directory]` starts a coding workspace. The optional browser is exclusive to the workstation profile.

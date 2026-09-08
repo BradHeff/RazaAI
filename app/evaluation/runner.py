@@ -10,6 +10,7 @@ import re
 from urllib import error, request
 
 from .cases import EvalCase, EvalSuite
+from ..ollama_client import OllamaClient
 
 
 @dataclass(frozen=True)
@@ -50,7 +51,7 @@ class OllamaChatClient:
             "model": model,
             "messages": messages,
             "stream": False,
-            "think": False,
+            **OllamaClient(host=self.base_url, model=model)._think_field(),
             "options": {
                 # Regression testing must not depend on sampling luck.
                 "temperature": 0,

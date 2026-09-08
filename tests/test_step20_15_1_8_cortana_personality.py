@@ -85,7 +85,7 @@ def main():
     profile = {"has_identity": True, "job_title": "IT Manager", "organization": "Example School"}
     lead = security_personality_lead("im using text file for storing passwords", profile)
     check("IT Manager" in lead and "know better" in lead, "confirmed role can drive context-aware disappointment")
-    guarded = credential_storage_authoritative_response("what about Excel?", profile)
+    guarded = credential_storage_authoritative_response("I store passwords in Excel", profile)
     check("rows and columns" in guarded and "password manager" in guarded.casefold(), "authoritative Excel response keeps both sass and corrective action")
     check("No." in guarded, "authoritative response gives an unambiguous verdict")
 

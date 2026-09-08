@@ -255,13 +255,17 @@ class OllamaClient:
         return caps
 
     def _think_field(self):
-        """Native model reasoning is off by default (latency and context cost on the Jetson), but RAZAAI_THINK=1 lets the operator enable Qwen3's native thinking mode for deeper single-turn reasoning when the trade-off is acceptable."""
+        """Preserve model-default thinking unless the operator selects an override."""
+        mode = os.getenv("RAZAAI_THINK", "auto").strip().casefold()
+        if mode in {"", "auto"}:
+            return {}
+        if mode not in {"1", "true", "yes", "on", "0", "false", "no", "off", "low", "medium", "high"}:
+            raise ValueError("RAZAAI_THINK must be auto, on, off, low, medium or high")
         if "thinking" not in self.capabilities():
             return {}
-        enabled = os.getenv("RAZAAI_THINK", "0").strip().casefold() in {
-            "1", "true", "yes", "on",
-        }
-        return {"think": enabled}
+        if mode in {"low", "medium", "high"}:
+            return {"think": mode}
+        return {"think": mode in {"1", "true", "yes", "on"}}
 
     def detect_context_window(self, fallback=None, timeout=5):
         """Return the effective context window for the active model."""

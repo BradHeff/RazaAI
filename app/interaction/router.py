@@ -461,6 +461,7 @@ class InteractionRouter:
                 "Do not ask the user to paste real passwords, tokens, private keys, recovery codes, or credentials.",
                 "If plaintext password storage is discussed, advise against it and recommend a password manager or appropriate secret store.",
                 "For an obviously unsafe practice stated casually, do not answer like a policy disclaimer: lead with one concise dry/sarcastic or pointed reaction, then give the corrective guidance.",
+                "An honest question or distress needs a clear answer, not ridicule.",
                 "If confirmed user-role context makes the mistake especially incongruous, you may say they should know better; never invent a role or personal fact.",
             ]
 

@@ -79,7 +79,7 @@ def main():
         )
 
     assert captured["payload"]["stream"] is True
-    assert captured["payload"]["think"] is False
+    assert "think" not in captured["payload"]
     assert captured["payload"]["keep_alive"] == "30m"
     assert chunks == ["Check ", "RTP first."]
     assert result["message"]["content"] == "Check RTP first."

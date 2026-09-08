@@ -513,7 +513,10 @@ def self_identity_authoritative_response(
     lower = value.casefold()
 
     if _SELF_NAME_RE.search(value):
-        return "RazaAI. Try to keep up."
+        if "name" in lower:
+            return "RazaAI."
+        from .personality import RAZAAI_SELF_DESCRIPTION
+        return RAZAAI_SELF_DESCRIPTION
 
     if _SELF_CREATOR_RE.search(value) or (
         identity_context_active and _SHORT_CREATOR_FOLLOWUP_RE.search(value)

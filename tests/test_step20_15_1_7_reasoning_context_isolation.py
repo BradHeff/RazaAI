@@ -76,8 +76,8 @@ def main():
     check(all(token in voice for token in ("sassy", "sarcasm", "help-desk")), "late personality contract keeps the Cortana-style voice visible")
 
     word = security_personality_lead("I save passwords in a Word document", profile)
-    excel = security_personality_lead("what about Excel spreadsheet?", profile)
-    paper = security_personality_lead("what if I write them on paper next to my keyboard?", profile)
+    excel = security_personality_lead("I store passwords in an Excel spreadsheet", profile)
+    paper = security_personality_lead("I put passwords on paper next to my keyboard", profile)
     vault = security_personality_lead("what about KeePass?", profile)
     check("Word document" in word and "know better" in word, "Word credential storage gets a contextual personality fallback")
     check("Excel spreadsheet" in excel and "rows and columns" in excel, "Excel credential storage gets a current-object sarcastic fallback")

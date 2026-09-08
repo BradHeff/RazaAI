@@ -64,7 +64,7 @@ def main():
     assert "num_ctx" not in payload["options"]
     assert payload["options"]["num_batch"] > 0
     assert payload["keep_alive"] == "30m"
-    assert payload["think"] is False
+    assert "think" not in payload
     print("[PASS] default requests honor the Modelfile context and keep the model warm")
 
     payload = _payload_for(

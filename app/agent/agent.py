@@ -139,12 +139,9 @@ Live evidence and validated incident evidence outrank persistent memory.
 """.strip()
 
 
-# Compatibility alias for older tests/imports.
-# V3 carries the richer learned personality, while the application supplies
-# this compact identity anchor plus the Python runtime authority contract.
 def core_identity_for(model_tag=None, *, full_voice=False):
     """Identity anchor for the model actually answering."""
-    text = RAZAAI_CORE_IDENTITY.replace("{lineage}", model_lineage(model_tag) if model_tag else "Qwen3 4B Heretic Q4_K_M")
+    text = RAZAAI_CORE_IDENTITY.replace("{lineage}", model_lineage(model_tag or OLLAMA_MODEL))
     if full_voice:
         text += "\n\n" + RAZAAI_VOICE_CONTRACT
     return text
@@ -3357,23 +3354,11 @@ Do not use tools to verify them.
                 + "All user-project file operations for this session must stay under this root."
             )
 
-        # V3 owns the richer learned personality, but application
-        # system messages still carry a compact immutable identity anchor.
-        # Python-owned runtime, routing, security, and operational guidance
-        # remain mode-aware and authoritative.
         mode = getattr(interaction, "mode", None) or "conversation"
-
-        # The anchor names the model that is actually answering, and
-        # models other than raza-edge (no fine-tuned persona) get the full
-        # voice contract from the application.
         active_model = getattr(getattr(self, "client", None), "model", None) or OLLAMA_MODEL
-        # Personality is an application contract for every model, including raza-edge.
-        # Fine-tuned weights may reinforce it, but are no longer the only carrier.
         core_identity = core_identity_for(active_model, full_voice=True)
 
-        # Reasoning and personality are both late turn contracts.
-        # Retrieval is evidence-only; the current request stays authoritative,
-        # and operational guidance must not bury RazaAI's voice.
+        # Keep the current request and voice visible after operational context.
         current_reasoning_guidance = reasoning_turn_guidance(user_input)
         current_coherence_guidance = conversation_coherence_guidance(user_input, self.messages)
         current_personality_guidance = personality_turn_guidance(interaction)
