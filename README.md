@@ -154,7 +154,7 @@ Browser / terminal -> Agent routing -> Ollama
 | `deploy/`, `scripts/` | Installation, services and evaluations |
 | `tests/` | Regression tests and synthetic fixtures |
 
-Read the [developer guide](docs/DEVELOPMENT.md) for tests and the API, or the [training guide](README_TRAINING.md) for model work. [Changes](CHANGELOG.md) records the current release.
+Read the [developer guide](docs/DEVELOPMENT.md) for tests, maintenance scripts and the API. [Changes](CHANGELOG.md) records the current release.
 
 ## About the project
 

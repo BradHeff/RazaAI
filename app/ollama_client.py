@@ -166,7 +166,7 @@ class OllamaClient:
         if expected and actual and actual.casefold() != str(expected).casefold():
             raise OllamaError(
                 f"Refusing to load {model}: quantization is {actual}, expected {expected}. "
-                "Rebuild it with: scripts/build_coder_model.sh"
+                f"Rebuild it with: {PROFILE.model} models"
             )
         return actual
 

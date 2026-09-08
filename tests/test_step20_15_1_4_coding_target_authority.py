@@ -183,7 +183,7 @@ def main():
     assert "external_attr" in package_source and "executable mode mismatch" in package_source
     for executable in (
         "bin/raza", "raza-code", "razaai", "razaai-8g", "endpoint-install", "deploy.sh",
-        "deploy/jetson-headless.sh", "scripts/build_coder_model.sh", "scripts/package_release.sh",
+        "deploy/jetson-headless.sh", "scripts/package_release.sh",
     ):
         assert Path(executable).stat().st_mode & 0o111, executable
     print("[PASS] release tooling fails closed if executable mode bits are not preserved")

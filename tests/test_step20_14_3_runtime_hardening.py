@@ -57,12 +57,9 @@ def main():
     print("[PASS] test suite has explicit fast/core/integration/device feedback gates")
 
     deploy = Path("deploy.sh").read_text(encoding="utf-8")
-    lock = Path("scripts/capture_runtime_lock.py").read_text(encoding="utf-8")
     assert 'pip install -r requirements.txt' in deploy
     assert "requirements.lock" not in deploy
-    assert '"pip", "freeze", "--local"' in lock
-    assert "full device acceptance suite passes" in lock
-    print("[PASS] dependency locking captures the accepted Jetson venv instead of guessing versions elsewhere")
+    print("[PASS] installation resolves runtime dependencies on the target device")
 
     package = Path("scripts/package_release.sh").read_text(encoding="utf-8")
     assert "data/" in Path(".gitignore").read_text().splitlines()

@@ -9,7 +9,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-from ..config import BASE_DIR
+from ..config import BASE_DIR, OLLAMA_MODEL, PROFILE
 
 
 MODEL_ID_RE = re.compile(r"MODEL-\d{8}-\d{6}-\d{6}")
@@ -90,14 +90,19 @@ class ModelLifecycleManager:
         self,
         gguf,
         *,
-        active_tag="raza-edge:4b-v3",
-        modelfile="Modelfile.raza-edge-v3",
+        active_tag=None,
+        modelfile=None,
     ):
         gguf_path = self._resolve_gguf(gguf)
-        template = (self.project_root / modelfile).resolve()
-        template.relative_to(self.project_root)
-        if not template.exists():
-            raise FileNotFoundError(modelfile)
+        active_tag = active_tag or OLLAMA_MODEL
+        template = None
+        content = None
+        if modelfile:
+            template = (self.project_root / modelfile).resolve()
+            template.relative_to(self.project_root)
+            content = template.read_text(encoding="utf-8")
+        else:
+            content = PROFILE.modelfile(json.dumps(str(gguf_path)))
 
         model_id = self._id()
         candidate_tag = f"raza-candidate:{model_id.lower().replace('model-', '')}"
@@ -110,15 +115,18 @@ class ModelLifecycleManager:
             "active_tag": active_tag,
             "candidate_tag": candidate_tag,
             "backup_tag": f"{active_tag}-backup-{model_id[-6:].lower()}",
-            "modelfile_template": str(template.relative_to(self.project_root)),
+            "modelfile_template": str(template.relative_to(self.project_root)) if template else None,
+            "modelfile_content": content,
             "verification": None,
         }
         self._write(data)
         return data
 
     def _candidate_modelfile(self, data):
-        template = self.project_root / data["modelfile_template"]
-        text = template.read_text(encoding="utf-8")
+        text = data.get("modelfile_content")
+        if text is None:
+            template = self.project_root / data["modelfile_template"]
+            text = template.read_text(encoding="utf-8")
         lines = text.splitlines()
         replaced = False
         for index, line in enumerate(lines):
@@ -162,7 +170,7 @@ class ModelLifecycleManager:
                 capability = self.runner(
                     [
                         sys.executable if "sys" in globals() else "python3",
-                        "-m", "scripts.step15_capability_eval",
+                        "-m", "scripts.capability_eval",
                         "--model", data["candidate_tag"],
                         "--run-regressions",
                     ],

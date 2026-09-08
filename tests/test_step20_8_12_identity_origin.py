@@ -57,17 +57,6 @@ def main():
     assert "2019" in anchor and "2024" in anchor
     print("[PASS] identity follow-ups answer created/resumed years from Python authority (model never consulted)")
 
-    modelfile = Path("Modelfile.raza-edge-v3").read_text(encoding="utf-8")
-    assert "2019" in modelfile and "movie scripts" in modelfile and "2024" in modelfile
-    print("[PASS] Modelfile SYSTEM carries the origin story (re-run `ollama create` to apply)")
-
-    seed = Path("training/identity_origin_v4_seed.jsonl")
-    lines = [l for l in seed.read_text(encoding="utf-8").splitlines() if l.strip()]
-    assert len(lines) >= 10
-    assert all("2019" in l for l in lines)
-
-    print("[PASS] reviewed identity seed contains the origin facts")
-
     print("=" * 78)
     print("STEP 20.8.10 IDENTITY ORIGIN AUTHORITY PASSED")
     print("=" * 78)

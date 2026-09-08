@@ -11,7 +11,7 @@ class FakeRunner:
     def __call__(self, command, cwd):
         self.commands.append(command)
         text=" ".join(command)
-        if "step15_capability_eval" in text:
+        if "capability_eval" in text:
             return {"success":True,"exit_code":0,
                 "stdout":"Capability ready:     YES\nHard-gate failures:   0\nRegression failures:  0\n",
                 "stderr":""}
@@ -27,13 +27,14 @@ def main():
         root=Path(tmp)
         (root/"model").mkdir()
         gguf=root/"model/candidate.gguf"; gguf.write_bytes(b"GGUF-test-candidate")
-        (root/"Modelfile.raza-edge-v3").write_text(
-            "FROM ./model/current.gguf\nPARAMETER num_ctx 4096\nSYSTEM \"\"\"RazaAI\"\"\"\n",
-            encoding="utf-8",
-        )
         runner=FakeRunner()
         manager=ModelLifecycleManager(root,runner=runner)
         job=manager.stage("model/candidate.gguf")
+        from app.config import OLLAMA_MODEL, PROFILE
+        assert job["active_tag"] == OLLAMA_MODEL
+        assert job["modelfile_template"] is None
+        assert f"num_ctx {PROFILE.context}" in job["modelfile_content"]
+        assert f"num_batch {PROFILE.batch}" in job["modelfile_content"]
         mid=job["model_id"]
         assert job["status"]=="staged" and len(job["sha256"])==64
         print("[PASS] GGUF candidate is hashed/staged without replacing active model")
@@ -48,8 +49,8 @@ def main():
         promoted=manager.promote(mid)
         assert promoted["status"]=="promoted"
         joined=[" ".join(c) for c in runner.commands]
-        assert any("ollama cp raza-edge:4b-v3 " in x and "-backup-" in x for x in joined)
-        assert any("ollama cp raza-candidate:" in x and "raza-edge:4b-v3" in x for x in joined)
+        assert any(f"ollama cp {OLLAMA_MODEL} " in x and "-backup-" in x for x in joined)
+        assert any("ollama cp raza-candidate:" in x and OLLAMA_MODEL in x for x in joined)
         print("[PASS] active-model promotion creates rollback tag first")
 
         rolled=manager.rollback(mid)

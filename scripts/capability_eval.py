@@ -4,6 +4,8 @@ import argparse
 import subprocess
 import sys
 
+from app.config import OLLAMA_MODEL, OLLAMA_HOST
+
 from app.evaluation.capabilities import (
     CAPABILITY_CASES,
     run_capability_suite,
@@ -22,8 +24,8 @@ REGRESSION_MODULES = (
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model", default="raza-edge:4b-v3")
-    parser.add_argument("--ollama-url", default="http://127.0.0.1:11434")
+    parser.add_argument("--model", default=OLLAMA_MODEL)
+    parser.add_argument("--ollama-url", default=OLLAMA_HOST)
     parser.add_argument("--seed", type=int, default=3407)
     parser.add_argument("--output-dir", default="output/model-evals")
     parser.add_argument("--run-regressions", action="store_true")
@@ -32,7 +34,7 @@ def main():
         type=int,
         default=1,
         help=(
-            "20.8.9: run the capability suite N times (seed + run index) and "
+            "Run the capability suite N times (seed + run index) and "
             "count a case as passed only if it passes in every run. One run "
             "cannot distinguish a fix from sampling luck at temperature 0.6."
         ),
@@ -41,7 +43,7 @@ def main():
     args.runs = max(1, int(args.runs))
 
     print("=" * 72)
-    print("RazaAI Step 15.0 Real-World Capability Evaluation")
+    print("RazaAI Capability Evaluation")
     print("=" * 72)
     print(f"Model: {args.model}")
     print(f"Cases: {len(CAPABILITY_CASES)}")
@@ -118,7 +120,7 @@ def main():
     if args.run_regressions:
         print()
         print("=" * 72)
-        print("RazaAI Step 15.0 Regression Suites")
+        print("RazaAI Regression Suites")
         print("=" * 72)
 
         for module in REGRESSION_MODULES:
@@ -145,7 +147,7 @@ def main():
 
     print()
     print("=" * 72)
-    print("STEP 15.0 CAPABILITY EVALUATION COMPLETE")
+    print("CAPABILITY EVALUATION COMPLETE")
     print("=" * 72)
     print(
         f"Capability score:     "

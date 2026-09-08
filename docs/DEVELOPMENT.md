@@ -20,10 +20,9 @@ Run entry points through `.venv/bin/python` when working directly with modules. 
 .venv/bin/python -m tests.run_core
 .venv/bin/python -m tests.run_integration
 .venv/bin/python -m tests.run_offline
-.venv/bin/python -m scripts.step20_acceptance
 ```
 
-The offline, tier and acceptance runners build an isolated synthetic knowledge corpus and index, then launch each test module separately. It does not use private field notes or the operator's memory. The first index build needs the embedding-model download; cache it before running without internet access.
+The offline and tier runners build an isolated synthetic knowledge corpus and index, then launch each test module separately. They do not use private field notes or the operator's memory. The first index build needs the embedding-model download; cache it before running without internet access.
 
 Model tests are separate:
 
@@ -81,7 +80,7 @@ The service serializes model turns, bounds retained sessions and client threads,
 
 ## Dependencies and releases
 
-Runtime requirements resolve on the target architecture. A local `pip freeze` is a record of one environment, not a portable Jetson lock. Training has its own environment and requirements.
+Runtime requirements resolve on the target architecture. A local `pip freeze` is a record of one environment, not a portable Jetson lock. Fine-tuning experiments, datasets and model exports are maintained outside the source tree. No trainer is bundled. The optional training job API requires `RAZAAI_TRAINER_SCRIPT` to point to a compatible Python trainer, `RAZAAI_ALLOW_MODEL_TRAINING=1`, and user approval. Set `RAZAAI_TRAINER_PYTHON` when that trainer uses a separate environment. Its command-line arguments are defined in `app/selfops/training.py`.
 
 ```bash
 scripts/package_release.sh
@@ -90,6 +89,21 @@ scripts/package_release.sh
 This builds `dist/RazaAI-v<version>.zip` from nonignored public working-tree files. It includes current edits and new source files, but excludes Git history, local credentials, runtime records, training datasets, models and private reference material. Check the archive before sharing it.
 
 Ignoring a file does not remove older copies from Git history. The local repository previously tracked a token and private records. Publish a new repository initialized from the clean source export, or separately review and remove sensitive history before pushing an existing repository. Do not publish the old history as part of the portfolio.
+
+## Maintenance scripts
+
+| Script | Purpose |
+| --- | --- |
+| `ingest_knowledge.py`, `search_knowledge.py` | Index and search reference documents |
+| `learning_loop.py`, `promote_incident_knowledge.py`, `review_knowledge_feedback.py` | Review and promote incident knowledge |
+| `coding_eval.py`, `capability_eval.py` | Evaluate a running model |
+| `stress_session.py`, `stress_service.py` | Exercise terminal sessions and the workstation API |
+| `backup.sh`, `backup.py` | Back up local runtime records |
+| `install-service.sh` | Install the workstation browser service |
+| `package_release.sh`, `package_release.py` | Export the public source archive |
+| `upgrade_cleanup.py` | Remove a retired nested package during upgrades |
+
+Run Python scripts with `.venv/bin/python -m scripts.<name>`. Evaluation and stress runners provide `--help`. See [stress testing](../scripts/STRESS_README.md) for the stress runners.
 
 ## Source layout and style
 

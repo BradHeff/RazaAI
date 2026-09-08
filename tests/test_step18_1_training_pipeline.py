@@ -23,11 +23,12 @@ def main():
         job=manager.prepare(
             "Improve concise greetings",
             dataset="base.jsonl",
+            base_model="example/base",
         )
         tid=job["training_id"]
         assert job["epochs"]==4.0 and job["max_seq"]==2048
         assert job["grad_accum"]==2 and job["learning_rate"]==5e-5
-        print("[PASS] training job preserves known-good v3 hyperparameters")
+        print("[PASS] training job preserves requested settings")
 
         job=manager.add_example(tid,[
             {"role":"user","content":"hello"},
@@ -63,7 +64,7 @@ def main():
         # Exercise the approved execution path with a harmless fake trainer.
         scripts=root/"scripts"
         scripts.mkdir(exist_ok=True)
-        fake=scripts/"train_raza_v3.py"
+        fake=scripts/"external_trainer.py"
         fake.write_text(
             "import argparse, pathlib\n"
             "p=argparse.ArgumentParser(); p.add_argument('--gguf-dir'); "
@@ -74,19 +75,28 @@ def main():
         )
         os.environ["RAZAAI_ALLOW_MODEL_TRAINING"]="1"
         os.environ["RAZAAI_ALLOW_EDGE_TRAINING"]="1"
+        os.environ.pop("RAZAAI_TRAINER_SCRIPT", None)
+        try:
+            manager.run(tid)
+        except FileNotFoundError as exc:
+            assert "RAZAAI_TRAINER_SCRIPT" in str(exc)
+        else:
+            raise AssertionError("training ran without an explicitly configured trainer")
+        os.environ["RAZAAI_TRAINER_SCRIPT"] = str(fake)
         completed=manager.run(tid)
         assert completed["status"]=="trained"
         assert completed["gguf_candidates"]
         assert "candidate.Q4_K_M.gguf" in completed["gguf_candidates"][0]
         command=" ".join(completed["command"])
-        assert "--base MassivDash/Qwen3-4B-heretic" in command
+        assert "--base example/base" in command
         assert "--warmup-steps 12" in command
         assert "--lora-r 16" in command and "--lora-alpha 32" in command
         assert "--quant q4_k_m" in command
-        print("[PASS] approved training execution uses isolated known-good v3 command/output")
+        print("[PASS] approved training runs the configured external trainer with isolated output")
 
         os.environ.pop("RAZAAI_ALLOW_MODEL_TRAINING",None)
         os.environ.pop("RAZAAI_ALLOW_EDGE_TRAINING",None)
+        os.environ.pop("RAZAAI_TRAINER_SCRIPT",None)
 
     print("\n"+"="*72)
     print("STEP 18.1 CONTROLLED MODEL RETRAINING PASSED")

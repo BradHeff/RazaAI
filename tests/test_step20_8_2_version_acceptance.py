@@ -32,12 +32,9 @@ def main():
     assert "Git status/diff evidence" in help_source
     print("[PASS] /help documents mature coding coworker capability")
 
-    acceptance = Path("scripts/step20_acceptance.py").read_text(encoding="utf-8")
-    assert "REQUIRED_VERSION" in acceptance and "APP_VERSION" in acceptance
-    assert "tests.test_step20_8_0_full_coding_workflow" in acceptance
-    assert "tests.test_step20_8_1_project_checks_git" in acceptance
-    assert "tests.test_step20_8_3_exact_patch_preservation" in acceptance
-    print("[PASS] Step 20 acceptance gates the 20.8.0 milestone")
+    from tests.run_offline import discover
+    assert {'test_step20_8_1_project_checks_git', 'test_step20_8_0_full_coding_workflow', 'test_step20_8_3_exact_patch_preservation'} <= set(discover())
+    print("[PASS] the offline runner includes these regression checks")
 
     print()
     print("=" * 78)

@@ -48,12 +48,11 @@ class TrainingJob:
 
 TRAINING_SYSTEM = (
     "You are RazaAI. Brad Heffernan created RazaAI. "
-    "Qwen3 4B Heretic is the underlying language model and Ollama is the runtime. "
     "Be concise, technically precise, evidence-first, and never invent tool results."
 )
 
 class ModelTrainingManager:
-    """Human-approved v3-compatible fine-tuning job manager."""
+    """Manage approved jobs for an explicitly configured external trainer."""
 
     def __init__(self, project_root=None):
         self.project_root = Path(project_root or BASE_DIR).resolve()
@@ -130,7 +129,6 @@ class ModelTrainingManager:
         ).to_dict()
         data["candidate_examples"] = []
         data["output_dir"] = f"data/model_training/jobs/{training_id}/output"
-        data["known_good_profile"] = "raza-edge:4b-v3"
         self._write(data)
         return data
 
@@ -182,19 +180,19 @@ class ModelTrainingManager:
         return output
 
     def _trainer_script(self):
-        candidates = (
-            self.project_root / "scripts" / "train_raza_v3.py",
-            self.project_root / "train_raza_v3.py",
-            self.project_root / "train_raza.py",
-            self.project_root / "scripts" / "train_raza.py",
-        )
-        for path in candidates:
-            if path.exists():
-                return path
-        raise FileNotFoundError(
-            "No known-good RazaAI trainer was found. Expected scripts/train_raza_v3.py "
-            "or a compatible train_raza.py on the development/training machine."
-        )
+        configured = os.getenv("RAZAAI_TRAINER_SCRIPT", "").strip()
+        if not configured:
+            raise FileNotFoundError(
+                "Training scripts are maintained separately. Set RAZAAI_TRAINER_SCRIPT "
+                "to a compatible trainer on the dedicated training machine."
+            )
+        path = Path(configured).expanduser()
+        if not path.is_absolute():
+            path = self.project_root / path
+        path = path.resolve()
+        if not path.is_file() or path.suffix != ".py":
+            raise FileNotFoundError("RAZAAI_TRAINER_SCRIPT must name an existing Python trainer")
+        return path
 
     def run(self, training_id):
         if os.getenv("RAZAAI_ALLOW_MODEL_TRAINING") != "1":
@@ -221,7 +219,7 @@ class ModelTrainingManager:
         gguf_dir = output_dir / "gguf"
         checkpoints = output_dir / "checkpoints"
         command = [
-            sys.executable,
+            os.getenv("RAZAAI_TRAINER_PYTHON") or sys.executable,
             str(trainer),
             "--base", str(data["base_model"]),
             "--data", str(dataset),

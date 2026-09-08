@@ -39,12 +39,7 @@ def setup_models(profile, source=None):
         elif subprocess.run(['ollama', 'show', base], env=env, stdout=subprocess.DEVNULL,
                             stderr=subprocess.DEVNULL).returncode:
             subprocess.run(['ollama', 'pull', base], env=env, check=True)
-        purpose = ('Propose code changes in the format requested by the application. '
-                   'You cannot execute commands or write files. Never claim a test passed without supplied evidence.'
-                   if coding else 'Answer clearly and concisely. Never invent tool results or observations.')
-        text = (f'FROM {base}\nPARAMETER num_ctx {profile.context}\n'
-                f'PARAMETER num_batch {profile.batch}\nPARAMETER temperature {0.2 if coding else 0.6}\n'
-                f'SYSTEM """You are RazaAI, created by Brad Heffernan. {purpose}"""\n')
+        text = profile.modelfile(base, coding=coding)
         with tempfile.TemporaryDirectory(prefix='raza-model-') as temp:
             path = Path(temp) / 'Modelfile'
             path.write_text(text, encoding='utf-8')

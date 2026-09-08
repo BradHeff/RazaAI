@@ -33,7 +33,7 @@ def add_model_training_example(training_id,messages): return _TRAIN.add_example(
 def model_training_status(training_id=None): return _TRAIN.status(training_id)
 def run_model_training(training_id): return _TRAIN.run(training_id)
 
-def stage_model_candidate(gguf,active_tag="raza-edge:4b-v3",modelfile="Modelfile.raza-edge-v3"):
+def stage_model_candidate(gguf,active_tag=None,modelfile=None):
     return _MODEL.stage(gguf,active_tag=active_tag,modelfile=modelfile)
 def verify_model_candidate(model_id,full=True): return _MODEL.verify(model_id,full=bool(full))
 def model_candidate_status(model_id=None): return _MODEL.status(model_id)
@@ -93,7 +93,7 @@ ROLLBACK_SELF_IMPROVEMENT_DEFINITION=_definition("rollback_self_improvement",
 
 PREPARE_MODEL_TRAINING_METADATA=_meta("prepare_model_training","model_training","proposal_only",20)
 PREPARE_MODEL_TRAINING_DEFINITION=_definition("prepare_model_training",
-    "Prepare a v3-compatible model fine-tuning job. Does not run training.",
+    "Prepare a fine-tuning job for an external trainer. Does not run training.",
     {"goal":{"type":"string"},"dataset":{"type":"string"},"base_model":{"type":"string"},
      "epochs":{"type":"number"},"max_seq":{"type":"integer"},"batch_size":{"type":"integer"},
      "grad_accum":{"type":"integer"},"learning_rate":{"type":"number"}},("goal",))

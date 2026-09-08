@@ -58,7 +58,8 @@ class SelfImprovementManager:
         "app/tools/web.py",
         "app/tools/web_grounding.py",
         "app/evaluation/",
-        "scripts/step",
+        "scripts/capability_eval.py",
+        "scripts/coding_eval.py",
     )
     MEDIUM_PREFIXES = (
         "app/documents/",
@@ -113,9 +114,7 @@ class SelfImprovementManager:
             )
         for name in (
             "requirements.txt",
-            "Modelfile.raza-edge-v3",
             "README.md",
-            "README_TRAINING.md",
         ):
             source = self.project_root / name
             if source.exists() and source.is_file():

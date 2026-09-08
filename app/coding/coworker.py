@@ -836,7 +836,7 @@ class WorkspaceCoworker:
         lines.append("\nReply `/approve` to apply and verify, `/reject` to discard.")
         return "\n".join(lines)
 
-    # ---- planner traces = raw material for a coder QLoRA seed ----------
+    # Optional planner diagnostics stay in the local data directory.
     TRACE_DIR = "coder_traces"
 
     def _trace(self, kind, **fields):

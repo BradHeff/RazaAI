@@ -8,12 +8,10 @@ import zipfile
 
 from app.config import APP_VERSION, BASE_DIR
 
-PUBLIC_DIRS = {'app', 'bin', 'config', 'deploy', 'docs', 'evals', 'examples', 'knowledge', 'playbooks', 'scripts', 'tests', 'training', '.github'}
-PUBLIC_ROOT = {'.gitignore', '.flake8', 'README.md', 'README_TRAINING.md', 'CHANGELOG.md',
-               'LICENSE', 'requirements.txt', 'requirements-training.txt', 'deploy.sh',
-               'razaai', 'razaai-8g', 'raza-code', 'endpoint-install',
-               'train_raza_v3.py', 'train_raza_glm.py', 'merge_glm_gguf.py',
-               'eval_glm_checkpoints.py', 'build_v2_dataset.py'}
+PUBLIC_DIRS = {'app', 'bin', 'config', 'deploy', 'docs', 'evals', 'examples', 'knowledge', 'playbooks', 'scripts', 'tests', '.github'}
+PUBLIC_ROOT = {'.gitignore', '.flake8', 'README.md', 'CHANGELOG.md', 'LICENSE',
+               'requirements.txt', 'deploy.sh', 'razaai', 'razaai-8g', 'raza-code',
+               'endpoint-install'}
 
 
 def ignored_path(name, patterns):
@@ -24,11 +22,13 @@ def ignored_path(name, patterns):
             continue
         negate = rule.startswith('!')
         pattern = rule.lstrip('!')
+        anchored = pattern.startswith('/')
+        pattern = pattern.lstrip('/')
         directory = pattern.endswith('/')
         pattern = pattern.rstrip('/')
         parts = name.split('/')
         candidates = ['/'.join(parts[:i]) for i in range(1, len(parts))] if directory else [name]
-        if '/' not in pattern:
+        if '/' not in pattern and not anchored:
             candidates = parts[:-1] if directory else parts
         matched = any(fnmatch.fnmatchcase(candidate, pattern) for candidate in candidates)
         if matched:
@@ -54,7 +54,7 @@ def public_files(root=BASE_DIR):
         path = root / name
         if ignored_path(name, patterns) or not path.is_file() or path.is_symlink():
             continue
-        if Path(name).parts[0] in PUBLIC_DIRS or name in PUBLIC_ROOT or name.startswith('Modelfile.'):
+        if Path(name).parts[0] in PUBLIC_DIRS or name in PUBLIC_ROOT:
             yield path
 
 

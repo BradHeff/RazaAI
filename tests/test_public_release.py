@@ -14,10 +14,11 @@ class ReleaseTests(unittest.TestCase):
         for name in ('.raza-url-token', '.env.prod', 'data/memory/records.json',
                      'RazaAI_gguf_glm_v4/model.gguf', 'knowledge/networking/school-networking-field-notes.md',
                      'knowledge/project/private.md', '.local/audit.md', 'config/infrastructure.json',
-                     'training/coder_v2_seed/pending.jsonl', 'requirements.lock'):
+                     'training/coder_v2_seed/pending.jsonl', 'requirements.lock',
+                     'train_experiment.py', 'Modelfile.old'):
             self.assertTrue(ignored_path(name, rules), name)
         for name in ('README.md', 'app/profiles.py', 'config/infrastructure.example.json',
-                     'knowledge/project/README.md', 'docs/images/interface.png'):
+                     'knowledge/project/README.md', 'docs/images/interface.png', 'tests/train_example.py'):
             self.assertFalse(ignored_path(name, rules), name)
 
     def test_release_files_and_modes(self):
@@ -27,7 +28,13 @@ class ReleaseTests(unittest.TestCase):
             with zipfile.ZipFile(archive) as z:
                 names = set(z.namelist())
                 self.assertTrue({'LICENSE', 'README.md', 'razaai', 'razaai-8g', 'app/profiles.py'} <= names)
-                self.assertFalse(any(n.startswith(('data/', '.git/', '.local/', 'logs/')) for n in names))
+                self.assertFalse(any(n.startswith(('data/', '.git/', '.local/', 'logs/', 'training/', 'model/', 'scripts/step')) for n in names))
+                for retired in ('README_TRAINING.md', 'requirements-training.txt',
+                                'train_raza_v3.py', 'train_raza_glm.py',
+                                'scripts/build_coder_model.sh'):
+                    self.assertNotIn(retired, names)
+                self.assertFalse(any(n.startswith('Modelfile.') for n in names))
+                self.assertIn('scripts/capability_eval.py', names)
                 self.assertNotIn('.raza-url-token', names)
                 for name in ('razaai', 'razaai-8g', 'deploy.sh'):
                     self.assertTrue((z.getinfo(name).external_attr >> 16) & 0o111)

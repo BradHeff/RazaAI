@@ -15,6 +15,17 @@ class RuntimeProfile:
     base_model: str
     code_base: str
 
+    def modelfile(self, source: str, *, coding: bool = False) -> str:
+        """Build an Ollama model definition with this profile's memory limits."""
+        if any(c in source for c in '\n\r'):
+            raise ValueError('Model source must fit on one line')
+        purpose = ('Propose code changes in the format requested by the application. '
+                   'You cannot execute commands or write files. Never claim a test passed without supplied evidence.'
+                   if coding else 'Answer clearly and concisely. Never invent tool results or observations.')
+        return (f'FROM {source}\nPARAMETER num_ctx {self.context}\n'
+                f'PARAMETER num_batch {self.batch}\nPARAMETER temperature {0.2 if coding else 0.6}\n'
+                f'SYSTEM """You are RazaAI, created by Brad Heffernan. {purpose}"""\n')
+
 
 PROFILES = {
     "standard": RuntimeProfile(

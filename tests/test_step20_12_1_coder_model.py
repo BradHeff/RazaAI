@@ -236,36 +236,22 @@ def main():
         "[PASS] closings are Python-answered for the coder model; swap alone no longer warns on a roomy host"
     )
 
-    mf3 = Path("Modelfile.raza-coder-3b").read_text(encoding="utf-8")
-    assert (
-        "Qwen2.5_Coder_3B" in mf3 and "num_batch 256" in mf3 and "Brad Heffernan" in mf3
-    )
-    print("[PASS] legacy 3B coder Modelfile present (buildable via 'legacy' mode)")
-
     for rel in ("app/evaluation/capabilities.py", "app/evaluation/application.py"):
         src = Path(rel).read_text(encoding="utf-8")
         assert '"think": False' not in src and "_think_field" in src, rel
     print("[PASS] evaluation adapters use the same capability check")
 
-    # The approved coder is built from Modelfile.raza-coder-3b-v2
-    # (Qwen3-4B-Instruct-2507 Q4_K_M) with tag raza-coder:qwen3-4b-v1.
-    mf = Path("Modelfile.raza-coder-3b-v2").read_text(encoding="utf-8")
-    assert "FROM hf.co/unsloth/Qwen3-4B-Instruct-2507-GGUF:Q4_K_M" in mf
-    for key in (
-        "num_ctx 8192",
-        "temperature 0.2",
-        "Brad Heffernan",
-        "Never claim that you:",
-    ):
-        assert key in mf, key
-    build = Path("scripts/build_coder_model.sh").read_text(encoding="utf-8")
-    assert 'TAG="${1:-raza-coder:qwen3-4b-v1}"' in build and "Modelfile.raza-coder-3b-v2" in build
     from app.profiles import PROFILES
+    for profile in PROFILES.values():
+        definition = profile.modelfile(profile.code_base, coding=True)
+        assert f"FROM {profile.code_base}" in definition
+        assert f"num_ctx {profile.context}" in definition
+        assert f"num_batch {profile.batch}" in definition
+        assert "temperature 0.2" in definition and "Brad Heffernan" in definition
+        assert "Never claim a test passed without supplied evidence" in definition
     assert "Qwen3-4B-Instruct-2507" in PROFILES["8g"].code_base
     assert "7b-instruct-q4_K_M" in PROFILES["standard"].code_base
-    print(
-        "[PASS] approved coder: Qwen3-4B Modelfile (8192 ctx, deterministic sampling, identity, no-claims contract); deploy and build scripts agree with APPROVED_CODE_MODEL"
-    )
+    print("[PASS] generated coder definitions use each profile's model and memory limits")
     print("=" * 78)
     print("STEP 20.12.1 CODER MODEL COMPATIBILITY PASSED")
     print("=" * 78)

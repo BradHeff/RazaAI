@@ -108,9 +108,6 @@ def main():
     check("credential_storage_answer_needs_repair(" in agent_source, "agent validates unsafe credential-storage drafts")
     check("credential_storage_authoritative_response(" in agent_source, "agent has an authoritative personality-preserving fallback")
 
-    modelfile = (ROOT / "Modelfile.raza-edge-v3").read_text(encoding="utf-8").casefold()
-    check("cortana from halo" in modelfile and "pointed aside" in modelfile, "future edge model rebuilds retain the stronger persona baseline")
-
     print("=" * 78)
     print("STEP 20.15.1.8 CORTANA PERSONALITY AUTHORITY PASSED")
     print("=" * 78)

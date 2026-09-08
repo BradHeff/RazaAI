@@ -231,7 +231,7 @@ def main():
     assert "def mul" in src7 and "def neg" in src7 and "test_add" in tst7 and "test_neg" in tst7
     print("[PASS] planner receives unique patch anchors; append mode adds to existing files without an anchor")
 
-    # Anchors are provided for clipped files too; planner traces feed the seed exporter.
+    # Clipped files retain patch anchors in local planner diagnostics.
     big = "".join(f"def mul{i}(a, b):\n    return a * b\n\n\n" for i in range(120)) + "def last(a):\n    return a\n"
     ws8 = Path(tempfile.mkdtemp()); (ws8 / "calc.py").write_text(big, encoding="utf-8")
     sel8 = select_context(WorkspaceManager(ws8), "add a function named neg(a) that returns -a to calc.py", ["calc.py"], max_chars=9000)
@@ -251,12 +251,12 @@ def main():
         f"WorkspaceCoworker(client=Bad(), manager=WorkspaceManager({str(ws9)!r})).handle('add a function named neg(a) that returns -a to calc.py and a unittest for it')\n"
     )
     _sp.run([_sys.executable, "-c", code], env=env, check=True, capture_output=True)
-    out = _sp.run([_sys.executable, "-m", "scripts.export_coder_seed"], env=env, capture_output=True, text=True, cwd=trace_root)
-    pending = trace_root / "training" / "coder_v2_seed" / "pending.jsonl"
-    assert pending.is_file() and "1 new record" in out.stdout, out.stdout + out.stderr
-    rec = json.loads(pending.read_text(encoding="utf-8").splitlines()[0])
-    assert rec["passed"] is False and rec["corrected_plan"] is None and "PATCH ANCHORS" in rec["user"] and any("FAIL" in f for f in rec["failure"])
-    print("[PASS] clipped files carry anchors; failed plans are traced and exported as seed records awaiting a corrected plan")
+    records = [json.loads(line) for path in (trace_root / "coder_traces").glob("*.jsonl")
+               for line in path.read_text(encoding="utf-8").splitlines()]
+    assert any(r["kind"] == "plan" and "PATCH ANCHORS" in r["user"] for r in records)
+    assert any(r["kind"] == "outcome" and r["passed"] is False
+               and any("FAIL" in check for check in r["checks"]) for r in records), records
+    print("[PASS] clipped files carry anchors and failed plans retain diagnostic evidence")
 
     # A new test that uses a name the module never imports is a gap with the import line as anchor.
     ws10 = Path(tempfile.mkdtemp())

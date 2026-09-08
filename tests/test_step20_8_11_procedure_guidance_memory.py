@@ -89,7 +89,7 @@ def main():
     assert "self.memory_snapshot = memory_snapshot()" in agent_source
     print("[PASS] startup memory line and low-memory/swap warning are wired")
 
-    eval_source = Path("scripts/step15_capability_eval.py").read_text(encoding="utf-8")
+    eval_source = Path("scripts/capability_eval.py").read_text(encoding="utf-8")
     assert '"--runs"' in eval_source and "UNSTABLE" in eval_source
     print("[PASS] capability eval supports --runs stability gating")
 

@@ -62,6 +62,36 @@ class ProfileTests(unittest.TestCase):
         self.assertEqual(data['code_model'], 'my-coder:q4')
         self.assertEqual(data['model'], 'my-chat:q4')
 
+    def test_model_setup_uses_profile_definitions_without_checkout_templates(self):
+        from unittest.mock import patch
+        from app.launcher import setup_models
+        from app.profiles import PROFILES
+
+        for profile in PROFILES.values():
+            definitions = {}
+
+            def run(command, **kwargs):
+                if command[1] == 'create':
+                    definitions[command[2]] = Path(command[-1]).read_text()
+                return subprocess.CompletedProcess(command, 0)
+
+            with tempfile.TemporaryDirectory() as temp:
+                source = Path(temp) / 'local model.gguf'
+                source.write_bytes(b'GGUF-test')
+                with patch('app.launcher.subprocess.run', side_effect=run):
+                    setup_models(profile, str(source))
+                chat = definitions[profile.model]
+                coder = definitions[profile.code_model]
+                self.assertIn(f'FROM {json.dumps(str(source))}', chat)
+                self.assertIn(f'FROM {profile.code_base}', coder)
+                for definition in (chat, coder):
+                    self.assertIn(f'num_ctx {profile.context}', definition)
+                    self.assertIn(f'num_batch {profile.batch}', definition)
+                    self.assertIn('created by Brad Heffernan', definition)
+                self.assertIn('Never claim a test passed without supplied evidence', coder)
+            with self.assertRaises(ValueError):
+                profile.modelfile('example\nPARAMETER num_ctx 99999')
+
     def test_profile_install_does_not_reuse_foreign_lock(self):
         text = (ROOT / 'deploy.sh').read_text()
         self.assertIn('pip install -r requirements.txt', text)

@@ -62,8 +62,6 @@ def main():
     assert down.detect_context_window(fallback=4096, timeout=1) == 4096
     print("[PASS] unreachable Ollama falls back safely without raising")
 
-    modelfile = Path("Modelfile.raza-edge-v3").read_text(encoding="utf-8")
-    assert "PARAMETER num_ctx" in modelfile
     config = Path("app/config.py").read_text(encoding="utf-8")
     assert "OLLAMA_CONTEXT_WINDOW_OVERRIDE" in config
     agent = Path("app/agent/agent.py").read_text(encoding="utf-8")

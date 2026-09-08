@@ -47,9 +47,15 @@ unsloth_compiled_cache/
 *.gguf
 *.safetensors
 raza_*.jsonl
-training/coder_v2_seed/
+/training/
+/train_*.py
+/merge_*gguf.py
+/eval_glm_checkpoints.py
+/build_v2_dataset.py
+/requirements-training.txt
+/README_TRAINING.md
 requirements.lock
-Modelfile.raza-glm-9b-v*
+/Modelfile.*
 
 # Private reference material and retired development notes
 BRANDING.md
@@ -66,5 +72,4 @@ wow.py
 testing.py
 smoke_test_v3.txt
 knowledge/**/promoted/
-Modelfile.raza-coder-sentie
 updateAI

@@ -36,12 +36,9 @@ def main():
     assert "asyncio.to_thread(self._improvement_history_sync" in tui
     print("[PASS] feedback reporting remains off the Textual event loop")
 
-    acceptance = Path("scripts/step20_acceptance.py").read_text(encoding="utf-8")
-    assert "APP_VERSION" in acceptance
-    assert "REQUIRED_VERSION" in acceptance
-    assert "tests.test_step20_7_0_feedback_loop" in acceptance
-    assert "tests.test_step20_7_1_feedback_commands_version" in acceptance
-    print("[PASS] Step 20 acceptance gates the declared application version")
+    from tests.run_offline import discover
+    assert {'test_step20_7_1_feedback_commands_version', 'test_step20_7_0_feedback_loop'} <= set(discover())
+    print("[PASS] the offline runner includes these regression checks")
 
     print()
     print("=" * 78)

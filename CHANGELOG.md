@@ -11,6 +11,7 @@ Both profiles open the terminal by default. `code [directory]` starts a coding w
 * Applied profile memory limits to model warmup and inference.
 * Updated the browser interface, keyboard controls, token storage and stream error handling.
 * Removed credentials, private field notes, generated data and obsolete development output from the public source set. Files remain available locally.
+* Removed retired training experiments, fixed model templates and duplicate milestone runners. Model setup generates definitions from the current hardware profile.
 * Rewrote the README and setup guides, added interface screenshots and an MIT licence, and shortened source comments.
 
 Earlier development notes are retained locally. Hardware validation requirements are in the developer guide.

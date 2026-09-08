@@ -51,9 +51,10 @@ def main():
     assert "Primary hypothesis:" in guidance2  # Still the compact incident template
     print("[PASS] both prompts now carry an actionable checklist inside the incident template")
 
-    modelfile = Path("Modelfile.raza-edge-v3").read_text(encoding="utf-8")
-    assert "PARAMETER num_batch 256" in modelfile
-    print("[PASS] Modelfile caps the prefill batch (num_batch 256) to keep llama-server memory flat")
+    from app.profiles import PROFILES
+    assert "PARAMETER num_batch 128" in PROFILES["8g"].modelfile("example")
+    assert "PARAMETER num_batch 512" in PROFILES["standard"].modelfile("example")
+    print("[PASS] generated model definitions cap prompt batches for each device")
 
     print("=" * 78)
     print("STEP 20.8.12 THIN EVIDENCE + KNOWLEDGE COVERAGE PASSED")
