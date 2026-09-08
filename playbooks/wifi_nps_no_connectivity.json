@@ -1,0 +1,70 @@
+{
+  "id": "wifi-nps-no-connectivity",
+  "name": "Wi-Fi NPS Authentication Succeeds but Client Has No Connectivity",
+  "expert": "networking",
+  "category": "networking",
+  "triggers": [
+    "nps",
+    "radius",
+    "authentication succeeds",
+    "authentication succeeded",
+    "wi-fi",
+    "wifi",
+    "cannot join",
+    "no connectivity",
+    "no internet"
+  ],
+  "tools": [
+    "get_ip_configuration",
+    "get_routing_table",
+    "ping_host"
+  ],
+  "checks": [
+    "Confirm the SSID/WLAN Access VLAN assigned after successful authentication matches the correct site VLAN.",
+    "Confirm the client receives a valid DHCP lease from the expected VLAN/subnet.",
+    "Confirm the client can reach its VLAN default gateway.",
+    "If VLAN, DHCP and gateway are correct, inspect AP/controller RADIUS attributes, session policy and EAP behaviour."
+  ],
+  "evaluators": {
+    "1": {
+      "type": "site_ssid_vlan",
+      "sites": [
+        "Clare",
+        "Balaklava"
+      ],
+      "ssids": {
+        "Staff": [
+          "Horizon-Staff",
+          "Staff",
+          "staff ssid"
+        ],
+        "Student": [
+          "Horizon-Student",
+          "Student",
+          "student ssid"
+        ]
+      },
+      "expected": {
+        "Clare": {
+          "Staff": 80,
+          "Student": 90
+        },
+        "Balaklava": {
+          "Staff": 30,
+          "Student": 50
+        }
+      }
+    },
+    "2": {
+      "type": "dhcp_lease"
+    }
+  },
+  "stop_condition": "Stop as soon as a wrong VLAN, failed DHCP lease, or failed gateway path explains the symptom.",
+  "resolution": "Correct the isolated VLAN/DHCP/session configuration; do not change unrelated NPS or EAP settings.",
+  "validation": [
+    "Reconnect or renew the client session.",
+    "Confirm expected IP/subnet/gateway.",
+    "Confirm gateway reachability.",
+    "Confirm normal network/internet access."
+  ]
+}

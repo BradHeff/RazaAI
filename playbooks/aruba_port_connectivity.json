@@ -1,0 +1,32 @@
+{
+  "id": "aruba-port-connectivity",
+  "name": "Aruba Switch Port Connectivity Failure",
+  "expert": "networking",
+  "category": "networking",
+  "triggers": [
+    "aruba",
+    "switch port",
+    "port",
+    "no network",
+    "no connectivity",
+    "link down",
+    "device offline",
+    "ap offline",
+    "phone offline"
+  ],
+  "tools": [
+    "diagnose_aruba_port"
+  ],
+  "checks": [
+    "Run diagnose_aruba_port against the exact configured Aruba switch and port.",
+    "Follow the returned primary_finding and perform only the returned next_check.",
+    "If physical/link evidence passes, continue to VLAN/addressing/gateway checks."
+  ],
+  "stop_condition": "Stop immediately when live switch evidence isolates a physical, administrative, interface-error, or MAC-learning fault.",
+  "resolution": "Apply the smallest correction to the isolated layer. Do not change VLAN/routing configuration when the live evidence indicates a physical-link problem.",
+  "validation": [
+    "Confirm port link state is up where expected.",
+    "Confirm the expected MAC/LLDP neighbour appears.",
+    "Confirm the endpoint receives expected network connectivity."
+  ]
+}

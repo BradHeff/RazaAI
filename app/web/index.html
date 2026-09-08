@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="RazaAI, a local technical assistant by Brad Heffernan.">
+<title>RazaAI | Local assistant</title>
+<style>
+:root{color-scheme:dark;--bg:#101513;--panel:#151d19;--line:#2a3830;--muted:#9baaa1;--text:#e6ece7;--accent:#b7db89}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.65 system-ui,sans-serif;height:100dvh;display:grid;grid-template-columns:248px 1fr}button,input,textarea{font:inherit}button{cursor:pointer}button:disabled{cursor:wait;opacity:.5}button:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+aside{padding:32px 24px 24px;background:#131b16;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:30px}.brand{display:flex;gap:12px;align-items:center;font-size:24px;letter-spacing:-1px;font-weight:600}.mark{width:36px;height:36px;border:1px solid var(--accent);border-radius:10px;display:grid;place-items:center;color:var(--accent);font-size:20px}.caption{font-size:11px;letter-spacing:1.7px;text-transform:uppercase;color:var(--muted)}.new{width:100%;background:transparent;border:1px solid #455444;border-radius:8px;padding:10px;color:var(--text);text-align:left}.side-title{margin-bottom:12px}.nav-item{padding:9px 12px;border-radius:6px;color:var(--muted);font-size:13px}.nav-item.active{color:var(--accent);background:#263325}.side-note{font-size:12px;color:var(--muted);line-height:1.8}.side-bottom{margin-top:auto;border-top:1px solid var(--line);padding-top:20px}.side-bottom p{margin:5px 0}.credit{font-size:12px;color:#7e9283}
+main{min-width:0;display:flex;flex-direction:column;overflow:hidden}.top{padding:20px 34px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:18px}.status{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--muted)}.dot{height:7px;width:7px;border-radius:50%;background:#bd9d58}.dot.ready{background:var(--accent)}.badge{font-size:11px;border:1px solid var(--line);padding:4px 10px;border-radius:20px;color:var(--muted)}details{position:relative}summary{cursor:pointer;font-size:12px;color:var(--muted)}.connection{position:absolute;z-index:2;right:0;top:30px;width:310px;background:var(--panel);padding:20px;border:1px solid var(--line);border-radius:12px;box-shadow:0 15px 50px #0008}.connection label{display:block;font-size:13px;margin-bottom:8px}.connection input{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:6px;padding:8px}.connection p{font-size:12px;color:var(--muted)}.connection button{background:transparent;border:0;color:var(--accent);padding:0}.connection code{font-size:11px}
+#log{flex:1;overflow-y:auto;padding:40px max(28px,calc((100% - 840px)/2));scroll-behavior:smooth}.welcome{max-width:790px;margin:clamp(12px,6vh,80px) auto 0}.eyebrow{color:var(--accent);font-size:11px;letter-spacing:2px;text-transform:uppercase}h1{font-size:clamp(28px,3vw,44px);font-weight:450;line-height:1.2;letter-spacing:-1.6px;margin:20px 0}.intro{color:var(--muted);font-size:16px;max-width:610px}.suggestions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:34px}.suggestion{background:var(--panel);border:1px solid var(--line);border-radius:10px;color:var(--text);text-align:left;padding:20px;line-height:1.5}.suggestion:hover{border-color:#607151}.suggestion strong{font-weight:500;font-size:14px;display:block;margin-bottom:7px}.suggestion span{font-size:12px;color:var(--muted)}.m{max-width:790px;margin:0 auto 28px;white-space:pre-wrap;overflow-wrap:anywhere;font-size:15px}.m::before{display:block;font-size:11px;font-weight:600;letter-spacing:1px;margin-bottom:10px}.you{padding:16px 20px;background:var(--panel);border:1px solid var(--line);border-radius:10px}.you::before{content:'YOU';color:var(--muted)}.ai{padding:6px 20px}.ai::before{content:'RAZAAI';color:var(--accent)}.err{padding:16px 20px;border-left:2px solid #e5a692;color:#e5b6a7}.thinking{color:var(--muted)}.thinking::after{content:'...';animation:pulse 1.2s infinite}@keyframes pulse{50%{opacity:.3}}.composer{padding:16px max(28px,calc((100% - 840px)/2)) 22px}form{display:flex;align-items:flex-end;gap:12px;padding:13px 14px 13px 20px;background:#1b251e;border:1px solid #42543e;border-radius:12px}textarea{flex:1;resize:none;min-height:40px;max-height:180px;background:transparent;color:var(--text);border:0;padding:7px 0;outline:none}textarea::placeholder{color:#819184}#send{border:0;border-radius:7px;background:var(--accent);color:#182413;padding:9px 20px;font-weight:600}.foot{display:flex;justify-content:space-between;gap:16px;color:#7e9283;font-size:11px;margin-top:12px}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+@media(max-width:800px){body{grid-template-columns:1fr}aside{display:none}.top{padding:16px 20px}#log{padding:24px 20px}.composer{padding:12px 16px 18px}.welcome{margin-top:12px}.badge{display:none}.suggestions{grid-template-columns:1fr}.suggestion{padding:16px}h1{letter-spacing:-1px}.foot{font-size:10px}.connection{width:min(310px,85vw)}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important}}
+</style>
+</head>
+<body>
+<aside aria-label="About RazaAI">
+<div><div class="brand"><span class="mark" aria-hidden="true">R</span>RazaAI</div><p class="caption">Your local assistant</p></div>
+<button class="new" id="new" type="button">New conversation <span style="float:right" aria-hidden="true">+</span></button>
+<div><div class="caption side-title">Workspace</div><div class="nav-item active">Conversation</div><div class="nav-item">Technical troubleshooting</div><div class="nav-item">Documents and code</div></div>
+<p class="side-note">Ask a question, work through a fault, or investigate a project.<br><br>Tool results support the answer. You approve proposed code changes.</p>
+<div class="side-bottom"><p class="caption">Runs on your hardware</p><p class="side-note" id="profile">Connecting to the local runtime</p><p class="credit">Built by Brad Heffernan</p></div>
+</aside>
+<main>
+<header class="top"><div class="status" role="status"><span id="dot" class="dot" aria-hidden="true"></span><span id="health">Connecting to RazaAI...</span></div><div style="display:flex;gap:18px;align-items:center"><span class="badge">Ollama runtime</span><details id="connection"><summary>Connection</summary><div class="connection"><label for="token">Access token</label><input id="token" type="password" autocomplete="off" placeholder="Paste your server token"><p>On the server, run <code id="token-command">razaai token</code>. This tab remembers the token until you close it.</p><button id="forget" type="button">Forget token</button><p id="runtime"></p><button id="mobile-new" type="button">Start a new conversation</button></div></details></div></header>
+<div id="log" role="log" aria-label="Conversation" aria-live="polite" aria-relevant="additions text">
+<section class="welcome" id="welcome"><div class="eyebrow">Local models. Practical tools.</div><h1>What are we working on?</h1><p class="intro">A technical assistant for the work in front of you. Troubleshoot a system, understand some code, or turn your notes into a document.</p><div class="suggestions"><button class="suggestion" type="button" data-prompt="Nginx returns 502 Bad Gateway. What should I check first?"><strong>Work through a problem</strong><span>Find the next useful check for a 502 error.</span></button><button class="suggestion" type="button" data-prompt="Explain the difference between a VLAN and a subnet."><strong>Understand a concept</strong><span>Get a clear explanation of VLANs and subnets.</span></button><button class="suggestion" type="button" data-prompt="What tools can you use, and which actions need my approval?"><strong>See what RazaAI can do</strong><span>Learn about tools and approval controls.</span></button><button class="suggestion" type="button" data-prompt="Who created RazaAI, and how did the project start?"><strong>About the project</strong><span>Meet the person behind RazaAI.</span></button></div></section>
+</div>
+<div class="composer"><form id="f"><label for="q" class="sr-only">Message RazaAI</label><textarea id="q" rows="1" maxlength="12000" placeholder="Ask RazaAI..." autofocus></textarea><button id="send" type="submit">Send</button></form><div class="foot"><span>Local inference. Web tools connect only when used.</span><span id="usage">Enter to send. Shift + Enter for a new line.</span></div></div>
+</main>
+<script>
+const $ = s => document.querySelector(s);
+function newSessionId() { return 'web-' + Array.from(crypto.getRandomValues(new Uint8Array(16)), n => n.toString(16).padStart(2, '0')).join(''); }
+let session = newSessionId();
+let busy = false;
+try { $('#token').value = sessionStorage.getItem('razaai_token') || ''; localStorage.removeItem('razaai_token'); } catch (_) {}
+$('#token').addEventListener('input', e => { try { sessionStorage.setItem('razaai_token', e.target.value); } catch (_) {} });
+$('#forget').addEventListener('click', () => { $('#token').value = ''; try { sessionStorage.removeItem('razaai_token'); } catch (_) {} });
+async function newConversation() {
+  if (busy) return;
+  const old = session;
+  session = newSessionId();
+  document.querySelectorAll('.m').forEach(e => e.remove());
+  $('#welcome').hidden = false;
+  $('#connection').open = false;
+  $('#usage').textContent = 'Enter to send. Shift + Enter for a new line.';
+  $('#q').focus();
+  try { await fetch('/v1/sessions/' + old, {method:'DELETE', headers:{Authorization:'Bearer ' + $('#token').value}}); } catch (_) {}
+}
+$('#new').addEventListener('click', newConversation);
+$('#mobile-new').addEventListener('click', newConversation);
+function add(cls, text) {
+  $('#welcome').hidden = true;
+  const p = document.createElement('p'); p.className = 'm ' + cls; p.textContent = text;
+  $('#log').appendChild(p); $('#log').scrollTop = $('#log').scrollHeight; return p;
+}
+async function health() {
+  try {
+    const r = await fetch('/healthz'); const h = await r.json();
+    $('#health').textContent = h.status === 'ok' ? 'RazaAI is ready' : 'Runtime needs attention';
+    $('#dot').classList.toggle('ready', h.status === 'ok');
+    $('#profile').textContent = h.profile === '8g' ? 'Jetson Orin Nano / 8 GB' : 'RTX workstation';
+    $('#runtime').textContent = `${h.version} | ${h.model}\n${h.degraded.join('; ')}`;
+    $('#token-command').textContent = (h.profile === '8g' ? 'razaai-8g' : 'razaai') + ' token';
+  } catch (_) { $('#health').textContent = 'Server unreachable'; $('#dot').classList.remove('ready'); }
+}
+health(); setInterval(health, 30000);
+document.querySelectorAll('[data-prompt]').forEach(button => button.addEventListener('click', () => { if (!busy) { $('#q').value = button.dataset.prompt; $('#q').focus(); } }));
+$('#q').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); $('#f').requestSubmit(); } });
+$('#f').addEventListener('submit', async e => {
+  e.preventDefault();
+  const q = $('#q').value.trim();
+  if (!q || busy) return;
+  if (!$('#token').value.trim()) { $('#connection').open = true; $('#token').focus(); return; }
+  busy = true; $('#send').disabled = true; $('#new').disabled = true;
+  add('you', q); $('#q').value = '';
+  const out = add('ai thinking', 'Thinking'); let text = ''; let terminal = false;
+  const controller = new AbortController();
+  const deadline = setTimeout(() => controller.abort(), 2400000);
+  try {
+    const r = await fetch('/v1/chat', {method:'POST', signal:controller.signal, headers:{'Content-Type':'application/json', Authorization:'Bearer ' + $('#token').value}, body:JSON.stringify({session, message:q})});
+    if (!r.ok) throw new Error(r.status === 401 ? 'Access denied. Check the token under Connection.' : `Server returned HTTP ${r.status}.`);
+    const reader = r.body.getReader(); const decoder = new TextDecoder(); let buffer = '';
+    function record(line) {
+      if (!line.trim()) return;
+      const rec = JSON.parse(line);
+      if (rec.error) { terminal = true; throw new Error(rec.error); }
+      if (rec.delta) { text += rec.delta; out.className = 'm ai'; out.textContent = text; }
+      if (rec.done) { terminal = true; out.className = 'm ai'; out.textContent = rec.content ?? text; $('#usage').textContent = `${rec.elapsed_seconds}s | ${rec.output_tokens ?? '?'} output tokens`; }
+      $('#log').scrollTop = $('#log').scrollHeight;
+    }
+    try {
+      for (;;) {
+        const {value, done} = await reader.read();
+        buffer += decoder.decode(value, {stream:!done});
+        let i;
+        while ((i = buffer.indexOf('\n')) >= 0) { record(buffer.slice(0,i)); buffer = buffer.slice(i+1); }
+        if (done) { if (buffer.trim()) record(buffer); break; }
+      }
+      if (!terminal) throw new Error('The connection ended before the answer completed. Please retry.');
+    } finally { await reader.cancel().catch(() => {}); reader.releaseLock(); }
+  } catch (err) { out.className = 'm err'; out.textContent = err.name === 'AbortError' ? 'The request timed out. Please retry.' : err.message; }
+  finally { clearTimeout(deadline); busy = false; $('#send').disabled = false; $('#new').disabled = false; $('#q').focus(); }
+});
+</script>
+</body>
+</html>

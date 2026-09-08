@@ -1,0 +1,12 @@
+{
+  "title": "Client has a 169.254.x.x (APIPA) address — DHCP failure troubleshooting",
+  "category": "networking",
+  "vendor": "Mixed: Windows DHCP, FortiGate, Aruba",
+  "product": "DHCP / client addressing",
+  "version": "Operational reference",
+  "author": "RazaAI curated knowledge (20.8.12)",
+  "knowledge_type": "reference",
+  "scope": "general",
+  "confidence": "source-derived",
+  "tags": ["apipa", "169.254", "dhcp", "dhcp relay", "ip helper", "scope", "lease", "vlan", "windows", "troubleshooting"]
+}

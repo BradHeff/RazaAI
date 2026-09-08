@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+WORKSPACE="$(pwd -P)"
+SOURCE="${BASH_SOURCE[0]}"
+while [ -L "$SOURCE" ]; do
+  DIR="$(cd -P "$(dirname "$SOURCE")" >/dev/null 2>&1 && pwd)"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ "$SOURCE" != /* ]] && SOURCE="$DIR/$SOURCE"
+done
+RAZA_HOME="$(cd -P "$(dirname "$SOURCE")" >/dev/null 2>&1 && pwd)"
+
+if [ -n "${RAZAAI_HOME:-}" ]; then
+  RAZA_HOME="$(cd -P "$RAZAAI_HOME" >/dev/null 2>&1 && pwd)"
+fi
+
+PYTHON=""
+for candidate in \
+  "$RAZA_HOME/.venv/bin/python3" \
+  "$RAZA_HOME/pyvenv/bin/python3" \
+  "$RAZA_HOME/.venv/bin/python" \
+  "$RAZA_HOME/pyvenv/bin/python" \
+  "$(command -v python3 || true)"
+do
+  [ -n "$candidate" ] || continue
+  [ -x "$candidate" ] || continue
+  if PYTHONPATH="$RAZA_HOME${PYTHONPATH:+:$PYTHONPATH}" "$candidate" -c 'import textual' >/dev/null 2>&1; then
+    PYTHON="$candidate"
+    break
+  fi
+done
+
+if [ -z "$PYTHON" ]; then
+  echo "raza-code: no RazaAI Python environment with Textual was found." >&2
+  echo "Install project requirements into .venv/pyvenv or run: python3 -m pip install -r $RAZA_HOME/requirements.txt" >&2
+  exit 1
+fi
+
+if [ "${RAZAAI_CODE_DEBUG:-0}" = "1" ]; then
+  echo "[raza-code] home=$RAZA_HOME" >&2
+  echo "[raza-code] workspace=$WORKSPACE" >&2
+  echo "[raza-code] python=$PYTHON" >&2
+fi
+
+export PYTHONPATH="$RAZA_HOME${PYTHONPATH:+:$PYTHONPATH}"
+export RAZAAI_CODING_WORKSPACE="$WORKSPACE"
+exec "$PYTHON" -m app.launcher --profile "${RAZAAI_PROFILE:-standard}" chat --workspace "$WORKSPACE" "$@"

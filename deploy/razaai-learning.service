@@ -1,0 +1,10 @@
+[Unit]
+Description=RazaAI incident learning and knowledge indexing
+
+[Service]
+Type=oneshot
+WorkingDirectory=@PROJECT_ROOT@
+ExecStart=@PROJECT_ROOT@/@LAUNCHER@ learn
+EnvironmentFile=-%h/.config/@LAUNCHER@/server.env
+MemoryMax=1200M
+Nice=10

@@ -1,0 +1,28 @@
+{
+  "id": "intune-app-failure",
+  "name": "Intune Enrollment or Application Deployment Failure",
+  "expert": "microsoft",
+  "category": "microsoft",
+  "triggers": [
+    "intune",
+    "enrollment",
+    "app failed",
+    "application failed",
+    "remediation",
+    "company portal"
+  ],
+  "tools": [],
+  "checks": [
+    "Determine whether the failure is enrollment, assignment, detection, installation, or remediation.",
+    "Confirm the affected user/device is actually targeted by the intended assignment.",
+    "Inspect the relevant Intune status/error and local management extension logs.",
+    "Only then modify detection rules, install context, remediation, allowlists or package configuration."
+  ],
+  "stop_condition": "Stop when the failure stage and its concrete error/evidence are identified.",
+  "resolution": "Correct the specific targeting, detection, installation or remediation fault rather than rebuilding the whole deployment.",
+  "validation": [
+    "Force/schedule a sync.",
+    "Confirm policy/app reevaluates.",
+    "Confirm successful install/remediation state."
+  ]
+}

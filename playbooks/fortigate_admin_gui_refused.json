@@ -1,0 +1,39 @@
+{
+  "id": "fortigate-admin-gui-refused",
+  "name": "FortiGate Administrative GUI Connection Refused",
+  "expert": "networking",
+  "category": "networking",
+  "requires_any": [
+    "fortigate",
+    "fortios"
+  ],
+  "triggers": [
+    "connection refused",
+    "web gui",
+    "web interface",
+    "gui does not load",
+    "gui doesn't load",
+    "gui not loading",
+    "admin access",
+    "administrative gui"
+  ],
+  "tools": [],
+  "checks": [
+    "Confirm the ingress interface has HTTPS/HTTP administrative access enabled as intended AND confirm the configured admin HTTP/HTTPS port is the port being used. Evidence: `show system interface <interface>`, `show full system global | grep admin-port`, and `show full system global | grep admin-sport`.",
+    "Inspect the GUI server certificate before restarting processes. Evidence: `show full system global | grep admin-server-cert`. If the configured certificate is missing, invalid, incompatible, or suspected after an upgrade, Fortinet documents temporarily restoring the built-in certificate with `config system global`, `set admin-server-cert \"Fortinet_Factory\"`, `end`.",
+    "If certificate configuration is valid, confirm the FortiOS GUI service has a listening socket/process. Evidence: `diagnose sys tcpsock | grep httpsd` or the configured port, plus `diagnose sys process pidof httpsd`. On FortiOS versions where admin login handling uses http_authd, use version-appropriate process/debug commands.",
+    "Capture one browser attempt and inspect the local response before changing unrelated configuration. Evidence: `diagnose sniffer packet any 'host <client-ip> and port <admin-port>' 4 0 l`, then check crash logs/debug output, local-in restrictions, VIP/port conflicts, and firmware-specific GUI defects only as supported by the capture."
+  ],
+  "evaluators": {
+    "1": {"type": "fortigate_admin_access"},
+    "2": {"type": "fortigate_admin_cert"},
+    "3": {"type": "fortigate_gui_listener"}
+  },
+  "stop_condition": "Stop as soon as interface/port, certificate, or GUI listener evidence identifies the cause. Do not revisit a check Python has already marked passed.",
+  "resolution": "Correct only the isolated administrative-access fault. For a bad GUI certificate, restore a valid admin-server-cert such as Fortinet_Factory only when the evidence supports that cause.",
+  "validation": [
+    "Confirm the FortiGate GUI TCP port accepts a connection.",
+    "Confirm the login page renders over HTTPS.",
+    "Confirm SSH and normal forwarding remain unaffected."
+  ]
+}

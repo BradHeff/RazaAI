@@ -1,0 +1,10 @@
+paramiko>=3.5,<6
+pywinrm>=0.5,<1
+psutil>=5.9,<8
+python-docx>=1.1,<2
+reportlab>=4.2,<6
+pypdf>=5,<7
+qdrant-client[fastembed]>=1.14.2,<2
+beautifulsoup4>=4.12,<5
+requests>=2.32,<3
+textual>=5,<9

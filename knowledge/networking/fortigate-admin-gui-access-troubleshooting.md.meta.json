@@ -1,0 +1,32 @@
+{
+  "title": "FortiGate administrative GUI unavailable while SSH works",
+  "category": "networking",
+  "vendor": "Fortinet",
+  "product": "FortiGate FortiOS administrative access",
+  "version": "FortiOS general; includes 7.6.x diagnostic note",
+  "author": "RazaAI curated knowledge (20.13.16)",
+  "knowledge_type": "reference",
+  "scope": "general",
+  "confidence": "source-derived",
+  "url": "https://community.fortinet.com/fortigate-3/troubleshooting-tip-error-err-connection-refused-is-received-while-attempting-to-access-fortigate-via-a-gui-or-web-browser-135008",
+  "tags": [
+    "fortigate",
+    "fortios",
+    "gui",
+    "https",
+    "http",
+    "administrative access",
+    "allowaccess",
+    "admin-sport",
+    "admin-port",
+    "diagnose sys tcpsock",
+    "connection refused",
+    "tcp rst",
+    "ssh",
+    "admin-server-cert",
+    "Fortinet_Factory",
+    "certificate",
+    "httpsd",
+    "http_authd"
+  ]
+}

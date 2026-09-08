@@ -1,0 +1,17 @@
+# User service template. scripts/install-service.sh fills in the checkout path.
+[Unit]
+Description=RazaAI browser and API
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=@PROJECT_ROOT@
+ExecStart=@PROJECT_ROOT@/@LAUNCHER@ web
+Environment=PYTHONUNBUFFERED=1
+EnvironmentFile=-%h/.config/@LAUNCHER@/server.env
+Restart=on-failure
+RestartSec=3
+MemoryMax=@MEMORY_MAX@
+
+[Install]
+WantedBy=default.target

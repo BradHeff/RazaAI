@@ -1,0 +1,12 @@
+{
+  "title": "Nginx 502 Bad Gateway — evidence-first troubleshooting",
+  "category": "servers",
+  "vendor": "nginx",
+  "product": "Nginx reverse proxy / application servers",
+  "version": "Operational reference",
+  "author": "RazaAI curated knowledge (20.8.8)",
+  "knowledge_type": "reference",
+  "scope": "general",
+  "confidence": "source-derived",
+  "tags": ["nginx", "502", "bad gateway", "upstream", "reverse proxy", "gunicorn", "php-fpm", "troubleshooting", "linux"]
+}

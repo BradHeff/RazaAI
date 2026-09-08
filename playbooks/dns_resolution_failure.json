@@ -1,0 +1,32 @@
+{
+  "id": "dns-resolution-failure",
+  "name": "DNS Resolution Failure",
+  "expert": "networking",
+  "category": "networking",
+  "triggers": [
+    "dns",
+    "resolve",
+    "resolution",
+    "nslookup",
+    "name lookup",
+    "cannot resolve"
+  ],
+  "tools": [
+    "get_ip_configuration",
+    "dns_lookup",
+    "ping_host"
+  ],
+  "checks": [
+    "Confirm the client has the expected DNS server addresses.",
+    "Test resolution of the reported hostname using dns_lookup.",
+    "If resolution fails, test reachability to the configured DNS server.",
+    "Only then inspect DNS records, forwarders, conditional forwarders or filtering."
+  ],
+  "stop_condition": "Stop when the failure is isolated to client DNS configuration, DNS server reachability, or record/forwarding resolution.",
+  "resolution": "Correct only the isolated DNS configuration, reachability, or record issue.",
+  "validation": [
+    "Repeat DNS lookup.",
+    "Resolve a second known-good hostname.",
+    "Confirm the affected application works."
+  ]
+}

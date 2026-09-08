@@ -1,0 +1,34 @@
+{
+  "id": "domain-auth-failure",
+  "name": "Active Directory Domain Authentication Failure",
+  "expert": "microsoft",
+  "category": "microsoft",
+  "triggers": [
+    "domain login",
+    "domain logon",
+    "cannot log in",
+    "cannot login",
+    "active directory",
+    "trust relationship",
+    "domain authentication"
+  ],
+  "tools": [
+    "get_ip_configuration",
+    "dns_lookup",
+    "ping_host"
+  ],
+  "checks": [
+    "Confirm the client is using the expected AD DNS servers and has valid IP/gateway configuration.",
+    "Confirm the client can resolve the AD domain/domain controller names.",
+    "Confirm network reachability to the relevant domain controller.",
+    "Then inspect secure-channel, time synchronization, account state and trust errors."
+  ],
+  "stop_condition": "Stop when DNS, DC reachability, time/account state, or secure-channel evidence explains the logon failure.",
+  "resolution": "Correct the isolated dependency or trust problem; avoid rejoining the domain until simpler dependencies are verified.",
+  "validation": [
+    "Resolve DC/domain names.",
+    "Confirm DC reachability.",
+    "Validate secure channel if applicable.",
+    "Test domain logon."
+  ]
+}

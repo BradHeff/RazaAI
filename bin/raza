@@ -1,0 +1,139 @@
+#!/usr/bin/env python3
+"""Connect to a RazaAI service with the Python standard library.
+
+Usage: raza [question | --health | doctor]
+Set RAZAAI_URL (default http://127.0.0.1:8420) and RAZAAI_TOKEN.
+With no arguments, open an interactive conversation. Requires Python 3.8+.
+"""
+import http.client
+import json
+import os
+import socket
+import sys
+import urllib.error
+import urllib.request
+
+URL = os.getenv("RAZAAI_URL", "http://127.0.0.1:8420").rstrip("/")
+TOKEN = os.getenv("RAZAAI_TOKEN", "")
+SESSION = os.getenv("RAZAAI_SESSION") or f"raza-{socket.gethostname()}-{os.getpid()}"
+
+
+def _request(path, data=None, method=None):
+    req = urllib.request.Request(
+        URL + path,
+        data=json.dumps(data).encode("utf-8") if data is not None else None,
+        headers={"Content-Type": "application/json", "Authorization": f"Bearer {TOKEN}"},
+        method=method or ("POST" if data is not None else "GET"),
+    )
+    return urllib.request.urlopen(req, timeout=2400)
+
+
+def health():
+    try:
+        with urllib.request.urlopen(URL + "/healthz", timeout=5) as resp:
+            h = json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        h = json.loads(exc.read().decode("utf-8"))
+    except Exception as exc:  # noqa: BLE001
+        print(f"RazaAI service unreachable at {URL}: {exc}")
+        return 2
+    mem = h.get("memory") or {}
+    print(f"{h.get('app')} {h.get('version')} | {h.get('status')} | model {h.get('model')} | "
+          f"{mem.get('available_mb')} MB available | swap {mem.get('swap_used_mb')} MB | "
+          f"sessions {h.get('sessions')} | turns {h.get('turns_served')}")
+    w = h.get("warmup") or {}
+    if w.get("requested") and not w.get("loaded"):
+        print("  model is still loading" + (f" ({w.get('error')})" if w.get("error") else " | first answer will wait for it"))
+    for item in h.get("degraded") or []:
+        print(f"  ! {item}")
+    return 0 if h.get("status") == "ok" else 1
+
+
+def doctor():
+    """Print the authenticated service health report."""
+    try:
+        with _request("/v1/doctor") as resp:
+            report = json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        print(f"error {exc.code}: {exc.read().decode('utf-8', 'replace')}", file=sys.stderr)
+        return 1
+    except Exception as exc:  # noqa: BLE001
+        print(f"RazaAI service unreachable at {URL}: {exc}")
+        return 2
+    print(report.get("text", ""))
+    return int(report.get("exit_code", 0))
+
+
+def ask(message):
+    try:
+        resp = _request("/v1/chat", {"session": SESSION, "message": message})
+    except urllib.error.HTTPError as exc:
+        body = exc.read().decode("utf-8", "replace")
+        print(f"error {exc.code}: {body}", file=sys.stderr)
+        return 1
+    except Exception as exc:  # noqa: BLE001
+        print(f"RazaAI service unreachable at {URL}: {exc}", file=sys.stderr)
+        return 2
+    text = ""
+    final = None
+    try:
+        with resp:
+            for raw in resp:
+                line = raw.decode("utf-8").strip()
+                if not line:
+                    continue
+                rec = json.loads(line)
+                if "error" in rec:
+                    raise ValueError(rec["error"])
+                if "delta" in rec:
+                    text += rec["delta"]
+                    sys.stdout.write(rec["delta"])
+                    sys.stdout.flush()
+                if rec.get("done"):
+                    final = rec
+                    break
+        if final is None:
+            raise ValueError("The connection ended before the answer completed. Please retry.")
+    except (ValueError, OSError, http.client.HTTPException) as exc:
+        print(f"\nerror: {exc}", file=sys.stderr)
+        return 1
+    answer = final.get("content", text)
+    if not text:
+        sys.stdout.write(answer)
+    elif answer != text:
+        sys.stdout.write("\nFinal answer:\n" + answer)
+    sys.stdout.write("\n")
+    if os.getenv("RAZAAI_VERBOSE"):
+        print(f"[{final.get('elapsed_seconds')}s | in {final.get('prompt_tokens')} | out {final.get('output_tokens')}]", file=sys.stderr)
+    return 0
+
+
+def main(argv):
+    if argv and argv[0] in ("-h", "--help"):
+        print(__doc__); return 0
+    if argv and argv[0] == "--health":
+        return health()
+    if argv and argv[0] == "doctor":
+        return doctor()
+    if argv and argv[0].startswith("-"):
+        print(f"raza: unknown option {argv[0]!r}. Options: --health, --help. "
+              "Quote a question that starts with '-' if you really mean to ask it.", file=sys.stderr)
+        return 64
+    if argv:
+        return ask(" ".join(argv))
+    print(f"RazaAI @ {URL} (session {SESSION}) | Ctrl-D to quit")
+    while True:
+        try:
+            line = input("You: ").strip()
+        except (EOFError, KeyboardInterrupt):
+            print(); return 0
+        if not line:
+            continue
+        if line in ("/exit", "/quit", "/bye"):
+            return 0
+        sys.stdout.write("RazaAI: ")
+        ask(line)
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))

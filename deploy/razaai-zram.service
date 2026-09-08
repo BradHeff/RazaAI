@@ -1,0 +1,11 @@
+[Unit]
+Description=RazaAI zram swap (compressed RAM swap, high priority)
+Before=ollama.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/razaai-configure-zram
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,27 @@
+{
+  "id": "printer-deployment-failure",
+  "name": "Windows Printer Deployment Failure",
+  "expert": "microsoft",
+  "category": "microsoft",
+  "triggers": [
+    "printer",
+    "gpo printer",
+    "group policy printer",
+    "printer deployment",
+    "cannot print"
+  ],
+  "tools": [],
+  "checks": [
+    "Determine whether the printer is missing, installed but offline, or installed but failing to print.",
+    "Confirm the user/computer receives the intended Group Policy Preference printer item.",
+    "Confirm print server/share reachability and driver availability.",
+    "Only then remove/reinstall or modify the GPP action/driver configuration."
+  ],
+  "stop_condition": "Stop when policy targeting, print-server reachability, driver state, or local queue state explains the failure.",
+  "resolution": "Correct the isolated deployment/driver/queue issue instead of broadly rebuilding printing.",
+  "validation": [
+    "Refresh policy/sign in as appropriate.",
+    "Confirm printer appears.",
+    "Print a test page."
+  ]
+}

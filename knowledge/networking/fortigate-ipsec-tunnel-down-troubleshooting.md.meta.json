@@ -1,0 +1,12 @@
+{
+  "title": "FortiGate IPsec tunnel down — systematic read-only troubleshooting",
+  "category": "networking",
+  "vendor": "Fortinet",
+  "product": "FortiGate FortiOS IPsec VPN",
+  "version": "Operational reference",
+  "author": "RazaAI curated knowledge (20.8.8)",
+  "knowledge_type": "reference",
+  "scope": "general",
+  "confidence": "source-derived",
+  "tags": ["fortigate", "fortios", "ipsec", "vpn", "tunnel", "phase 1", "phase 2", "ike", "selectors", "route", "policy", "troubleshooting"]
+}

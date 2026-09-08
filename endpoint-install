@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Install the lightweight terminal client for an existing RazaAI service.
+set -euo pipefail
+project_root="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+mkdir -p "$HOME/.local/bin"
+ln -sfn "$project_root/bin/raza" "$HOME/.local/bin/raza"
+printf 'Installed raza. Set RAZAAI_URL and RAZAAI_TOKEN for your service.\n'

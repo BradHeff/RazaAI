@@ -1,0 +1,12 @@
+{
+  "title": "FortiGate firewall policy not matching traffic — verify before editing",
+  "category": "networking",
+  "vendor": "Fortinet",
+  "product": "FortiGate FortiOS firewall policy",
+  "version": "Operational reference",
+  "author": "RazaAI curated knowledge (20.8.12)",
+  "knowledge_type": "reference",
+  "scope": "general",
+  "confidence": "source-derived",
+  "tags": ["fortigate", "fortios", "firewall policy", "policy id", "session", "debug flow", "forward traffic log", "route", "troubleshooting"]
+}

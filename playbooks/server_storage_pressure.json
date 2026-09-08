@@ -1,0 +1,30 @@
+{
+  "id": "server-storage-pressure",
+  "name": "Server Storage Pressure",
+  "expert": "servers",
+  "category": "servers",
+  "triggers": [
+    "disk full",
+    "storage full",
+    "no space",
+    "storage pressure",
+    "filesystem full",
+    "low disk"
+  ],
+  "tools": [
+    "get_system_info"
+  ],
+  "checks": [
+    "Identify the exact filesystem/volume that is full and current utilization.",
+    "Identify which directory, dataset, log, snapshot or workload is consuming the space.",
+    "Determine whether growth is expected, leaked, stale, or caused by retention/snapshots.",
+    "Free or expand capacity only after the consuming source is identified."
+  ],
+  "stop_condition": "Stop when the capacity consumer and growth cause are identified.",
+  "resolution": "Remove/rotate/relocate the confirmed consumer or expand storage where growth is legitimate.",
+  "validation": [
+    "Confirm safe free-space margin.",
+    "Confirm affected services recover.",
+    "Check that growth rate is normal."
+  ]
+}

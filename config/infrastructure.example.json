@@ -1,0 +1,13 @@
+{
+  "hosts": {
+    "example-switch": {
+      "type": "aruba",
+      "host": "192.0.2.10",
+      "port": 22,
+      "site": "Example lab",
+      "password_env": "RAZAAI_SWITCH_PASSWORD",
+      "enabled": false,
+      "username": "operator"
+    }
+  }
+}

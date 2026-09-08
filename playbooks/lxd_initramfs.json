@@ -1,0 +1,32 @@
+{
+  "id": "lxd-vm-initramfs",
+  "name": "LXD VM Boot Failure / Initramfs",
+  "expert": "servers",
+  "category": "servers",
+  "triggers": [
+    "lxd",
+    "vm",
+    "initramfs",
+    "fsck",
+    "filesystem",
+    "agent isn't running",
+    "agent is not running"
+  ],
+  "tools": [
+    "get_system_info"
+  ],
+  "checks": [
+    "Inspect the VM console and identify the exact initramfs/filesystem error.",
+    "Identify the affected root filesystem/block device before running repair commands.",
+    "If filesystem inconsistency is confirmed, run the appropriate filesystem check/repair against the correct device.",
+    "Reboot and verify the guest agent and services return."
+  ],
+  "stop_condition": "Stop before filesystem repair unless the affected device and filesystem problem are positively identified.",
+  "resolution": "Repair the confirmed filesystem problem, then boot normally; do not run destructive repair against an unverified device.",
+  "validation": [
+    "VM boots normally.",
+    "LXD agent is available.",
+    "Application services start.",
+    "Review storage/host health for recurrence."
+  ]
+}
