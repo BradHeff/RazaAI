@@ -484,10 +484,10 @@ def search_web(query, max_results=DEFAULT_MAX_RESULTS):
 
 
 def fetch_web_page(url, max_chars=12000):
-    _require_online()
     """Fetch text from one public webpage after SSRF/private-network validation."""
     if os.getenv("RAZAAI_WEB_ENABLED", "1").strip().lower() in {"0", "false", "no"}:
         raise ValueError("Web access is disabled by RAZAAI_WEB_ENABLED")
+    _require_online()
 
     safe_url = validate_public_url(url)
     max_chars = max(500, min(int(max_chars), 30000))

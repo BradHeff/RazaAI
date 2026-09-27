@@ -138,6 +138,8 @@ An environment override takes priority over the selected profile. Check `config`
 
 State is separate by default: `~/.local/state/razaai` and `~/.local/state/razaai-8g`. The knowledge index is shared under `data/`. Run indexing after exiting terminal sessions and stopping the browser service because the local vector store allows one process to open it at a time.
 
+If the browser token file exists but is empty, startup fails closed with "Token file is empty or changed" rather than silently writing a new token into a file something else created. Delete the empty file and run `razaai token` again to regenerate it.
+
 If installation fails, check your Python version and the first pip error. Runtime dependencies resolve on the target architecture; an old workstation `requirements.lock` is never reused on Jetson. `./deploy.sh 8g --skip-models` installs just the application for an offline model transfer.
 
 ## For developers

@@ -1,5 +1,6 @@
 import json
 import os
+import threading
 import time
 import urllib.request
 import urllib.error
@@ -75,12 +76,12 @@ def _ollama_http_error(exc):
 def normalize_keep_alive(value):
     """Ollama accepts keep_alive as a JSON number (seconds; -1 = forever, 0 = unload) or a Go duration string ("30m", "-1m")."""
     if value is None:
-        return "30m"
+        return OLLAMA_KEEP_ALIVE
     if isinstance(value, (int, float)):
         return int(value)
     text = str(value).strip()
     if not text:
-        return "30m"
+        return OLLAMA_KEEP_ALIVE
     try:
         return int(text)
     except ValueError:
@@ -112,9 +113,13 @@ class OllamaClient:
     # (Qwen3 does; Qwen2.5-Coder does not and Ollama rejects the field).
     _capabilities_cache = {}
     _model_info_cache = {}
+    _cache_lock = threading.Lock()
     # Metadata goes stale when the operator rebuilds a model with
     # `ollama create`; a forever-cache defeats the quantization authority gate.
-    _MODEL_INFO_TTL_SECONDS = float(os.getenv("RAZAAI_MODEL_INFO_TTL", "300"))
+    try:
+        _MODEL_INFO_TTL_SECONDS = float(os.getenv("RAZAAI_MODEL_INFO_TTL", "300"))
+    except ValueError:
+        _MODEL_INFO_TTL_SECONDS = 300.0
 
     def model_info(self, model=None, timeout=5, *, refresh=False):
         """Return Ollama /api/show metadata without loading model weights."""
@@ -122,7 +127,8 @@ class OllamaClient:
         key = (self.host, tag)
         now = time.monotonic()
         if not refresh:
-            cached = self._model_info_cache.get(key)
+            with self._cache_lock:
+                cached = self._model_info_cache.get(key)
             if cached and now - cached[0] < self._MODEL_INFO_TTL_SECONDS:
                 return cached[1]
         request = urllib.request.Request(
@@ -142,7 +148,8 @@ class OllamaClient:
             raise OllamaError("Ollama returned invalid model metadata JSON.") from exc
         if not isinstance(info, dict):
             raise OllamaError(f"Ollama returned invalid metadata for {tag}.")
-        self._model_info_cache[key] = (now, info)
+        with self._cache_lock:
+            self._model_info_cache[key] = (now, info)
         return info
 
     def model_quantization(self, model=None, timeout=5, *, refresh=False):
@@ -239,7 +246,8 @@ class OllamaClient:
         return self.detect_context_window(fallback=4096)
 
     def capabilities(self, timeout=5):
-        cached = self._capabilities_cache.get((self.host, self.model))
+        with self._cache_lock:
+            cached = self._capabilities_cache.get((self.host, self.model))
         if cached is not None:
             return cached
         caps = set()
@@ -251,7 +259,8 @@ class OllamaClient:
                 caps = {str(c) for c in info["capabilities"]}
         except Exception:  # noqa: BLE001 - a probe must never break a request
             caps = {"thinking"}
-        self._capabilities_cache[(self.host, self.model)] = caps
+        with self._cache_lock:
+            self._capabilities_cache[(self.host, self.model)] = caps
         return caps
 
     def _think_field(self):
